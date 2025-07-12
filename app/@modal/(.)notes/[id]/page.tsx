@@ -4,18 +4,17 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import NotePreviewClient from "./NotePreview.client";
-import { fetchNoteById } from "@/lib/api";
+import { fetchNoteById } from "@/lib/api/clientApi";
 
 type Props = {
-  params: Promise<{ id: string }>
-}
+  params: Promise<{ id: string }>;
+};
 
 const Preview = async ({ params }: Props) => {
-
   const { id } = await params;
-  const noteId = Number(id);
+  const noteId = id;
 
-  if (isNaN(noteId)) {
+  if (id) {
     throw new Error("Invalid note ID");
   }
 
@@ -30,5 +29,5 @@ const Preview = async ({ params }: Props) => {
       <NotePreviewClient id={noteId} />
     </HydrationBoundary>
   );
-}
+};
 export default Preview;

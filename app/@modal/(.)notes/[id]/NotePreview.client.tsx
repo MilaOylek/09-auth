@@ -2,14 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api";
+import { fetchNoteById } from "@/lib/api/clientApi";
 import Modal from "@/components/Modal/Modal";
 import css from "./NotePreview.module.css";
-import type { Note } from "@/types/note";
 
-type NotePreviewProps = {
-  id: number;
-};
+type NotePreviewProps = { id: string };
 
 export default function NotePreview({ id }: NotePreviewProps) {
   const router = useRouter();
@@ -19,19 +16,17 @@ export default function NotePreview({ id }: NotePreviewProps) {
     isLoading,
     isError,
     error,
-  } = useQuery<Note, Error>({
+  } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
-    enabled: !isNaN(id),
-    staleTime: 5 * 60 * 1000,
-    refetchOnMount: false, 
+    refetchOnMount: false,
   });
 
   const handleClose = () => {
     router.back();
   };
 
-  if (isNaN(id)) {
+  if (isLoading) {
     return <p className={css.messageError}>Invalid note ID.</p>;
   }
 

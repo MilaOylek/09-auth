@@ -1,20 +1,27 @@
 "use client";
 
-import { useNoteStore } from "@/lib/store/noteStore";
+import { useNoteDraft } from "@/lib/store/noteDraftStore";
 import { useRouter } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createNote } from "@/lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createNote, getCategories } from "@/lib/api/clientApi";
 import { useState } from "react";
-import { type CreateNotePayload, type Tag } from "@/types/note";
+import { type CreateNoteRequest, type CategoryType } from "@/lib/api/clientApi";
 import styles from "./NoteForm.module.css";
 
 export default function NoteForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { draft, setDraft, clearDraft } = useNoteDraft();
+  const [formState, setFormState] = useState<CreateNoteRequest>({
+    title: draft.title || "",
+    content: draft.content || "",
+    categoryId: draft.categoryId || "",
+  });
 
-  const { draft, setDraft, clearDraft } = useNoteStore();
-
-  const [formState, setFormState] = useState(draft);
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
 
   const mutation = useMutation({
     mutationFn: createNote,
@@ -41,14 +48,7 @@ export default function NoteForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const payload: CreateNotePayload = {
-      title: formState.title,
-      content: formState.content,
-      tag: formState.tag as Tag,
-    };
-
-    mutation.mutate(payload);
+    mutation.mutate(formState);
   };
 
   const handleCancel = () => {
@@ -65,6 +65,7 @@ export default function NoteForm() {
           value={formState.title}
           onChange={handleChange}
           className={styles.input}
+          required
         />
       </div>
 
@@ -76,22 +77,27 @@ export default function NoteForm() {
           value={formState.content}
           onChange={handleChange}
           className={styles.textarea}
+          required
         />
       </div>
 
       <div className={styles.formGroup}>
-        <label htmlFor="tag">Tag</label>
+        <label htmlFor="categoryId">Category</label>
         <select
-          name="tag"
-          value={formState.tag}
+          name="categoryId"
+          value={formState.categoryId}
           onChange={handleChange}
           className={styles.select}
+          required
         >
-          <option value="Todo">Todo</option>
-          <option value="Work">Work</option>
-          <option value="Personal">Personal</option>
-          <option value="Meeting">Meeting</option>
-          <option value="Shopping">Shopping</option>
+          <option value="" disabled>
+            Select a category
+          </option>
+          {categories.map((cat: CategoryType) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
 
