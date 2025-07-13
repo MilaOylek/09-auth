@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createNote, getCategories } from "@/lib/api/clientApi";
 import { useState } from "react";
-import { type CreateNoteRequest, type CategoryType } from "@/lib/api/clientApi";
+import { type CategoryType, CreateNoteRequest } from "@/types/note";
 import styles from "./NoteForm.module.css";
 
 export default function NoteForm() {

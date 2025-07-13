@@ -5,6 +5,8 @@ import { parse } from "cookie";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+
+  console.log("BODY:", body);
   const apiRes = await api.post("auth/register", body);
 
   const cookieStore = await cookies();

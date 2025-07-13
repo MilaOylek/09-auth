@@ -3,125 +3,19 @@ import {
   type Note,
   type FetchNotesParams,
   type FetchNotesResponse,
+  type Category,
+  CreateNoteRequest,
 } from "@/types/note";
+import {
+  User,
+  UpdateProfileRequest,
+  RegisterRequest,
+  LoginRequest,
+} from "@/types/user";
 import { nextServer } from "./api";
-
-export type NoteType = {
-  id: string;
-  title: string;
-  content: string;
-  categoryId: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type NoteListType = {
-  notes: NoteType[];
-  total: number;
-};
-
-export type CategoryType = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type CreateNoteRequest = {
-  title: string;
-  content: string;
-  categoryId: string;
-};
-
-export type User = {
-  id: string;
-  email: string;
-  userName: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type RegisterRequest = {
-  userName: string;
-  email: string;
-  password: string;
-};
-
-export type LoginRequest = {
-  email: string;
-  password: string;
-};
 
 export type ServerBoolResponse = {
   success: boolean;
-};
-
-export const getNotes = async (categoryId?: string, title?: string) => {
-  const { data } = await nextServer<NoteListType>("/notes", {
-    params: { categoryId, title },
-  });
-  return data;
-};
-
-export const getSingleNote = async (id: string) => {
-  const { data } = await nextServer<NoteType>(`/notes/${id}`);
-  return data;
-};
-
-export const getCategories = async () => {
-  const { data } = await nextServer<CategoryType[]>(`/categories`);
-  return data;
-};
-
-export const createNote = async (payload: CreateNoteRequest) => {
-  const { data } = await nextServer.post<NoteType>(`/notes`, payload);
-  return data;
-};
-
-export const register = async (payload: RegisterRequest) => {
-  const { data } = await nextServer.post<User>(`/auth/register`, payload);
-  return data;
-};
-
-export const login = async (payload: LoginRequest) => {
-  const { data } = await nextServer.post<User>(`/auth/login`, payload);
-  return data;
-};
-
-export const checkSession = async () => {
-  const { data } = await nextServer<ServerBoolResponse>(`/auth/session`);
-  return data.success;
-};
-
-export const getMe = async () => {
-  const { data } = await nextServer<User>(`/auth/me`);
-  return data;
-};
-
-export const logOut = async () => {
-  await nextServer.post<ServerBoolResponse>(`/auth/logout`);
-};
-
-export class ApiError extends Error {
-  constructor(
-    public message: string,
-    public statusCode?: number,
-    public data?: unknown
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
-}
-
-const handleApiError = (error: unknown, defaultMessage: string): never => {
-  if (axios.isAxiosError(error)) {
-    const message = error.response?.data?.message || error.message;
-    console.error(defaultMessage, error.response?.data || error.message);
-    throw new ApiError(message, error.response?.status, error.response?.data);
-  }
-  throw error;
 };
 
 export const fetchNotes = async ({
@@ -144,11 +38,90 @@ export const fetchNotes = async ({
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const res = await nextServer.get<Note>(`/notes/${id}`);
-  return res.data;
+  try {
+    const res = await nextServer.get<Note>(`/notes/${id}`);
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "Error fetching note by id");
+    throw error;
+  }
+};
+
+export const createNote = async (payload: CreateNoteRequest): Promise<Note> => {
+  try {
+    const res = await nextServer.post<Note>("/notes", payload);
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "Error creating note");
+    throw error;
+  }
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
-  const res = await nextServer.delete<Note>(`/notes/${id}`);
+  try {
+    const res = await nextServer.delete<Note>(`/notes/${id}`);
+    return res.data;
+  } catch (error) {
+    handleApiError(error, "Error deleting note");
+    throw error;
+  }
+};
+
+export const register = async (data: RegisterRequest) => {
+  const res = await nextServer.post<User>("/auth/register", data);
+  return res.data;
+};
+
+export const login = async (data: LoginRequest) => {
+  const res = await nextServer.post<User>("/auth/login", data);
+  return res.data;
+};
+
+export const logout = async (): Promise<void> => {
+  await nextServer.post("/auth/logout");
+};
+
+export const checkSession = async () => {
+  const res = await nextServer.get<ServerBoolResponse>("/auth/session");
+  return res.data.success;
+};
+
+export const getMe = async () => {
+  const res = await nextServer.get<User>("/users/me");
+  return res.data;
+};
+
+export class ApiError extends Error {
+  constructor(
+    public message: string,
+    public statusCode?: number,
+    public data?: unknown
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+const handleApiError = (error: unknown, defaultMessage: string): never => {
+  if (axios.isAxiosError(error)) {
+    const message = error.response?.data?.message || error.message;
+    console.error(defaultMessage, error.response?.data || error.message);
+    throw new ApiError(message, error.response?.status, error.response?.data);
+  }
+  throw error;
+};
+
+export const getCategories = async (): Promise<Category[]> => {
+  try {
+    const { data } = await nextServer.get<Category[]>("/categories");
+    return data;
+  } catch (error) {
+    handleApiError(error, "Error fetching categories");
+    throw error;
+  }
+};
+
+export const updateProfile = async (data: UpdateProfileRequest) => {
+  const res = await nextServer.put<User>("/users/me", data);
   return res.data;
 };

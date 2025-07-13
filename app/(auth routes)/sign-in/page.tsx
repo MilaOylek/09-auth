@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoginRequest } from "@/types/user";
@@ -8,31 +7,30 @@ import { login } from "@/lib/api/clientApi";
 import { useAuth } from "@/lib/store/authStore";
 import css from "./SignIn.module.css";
 
-const Login = () => {
+const SignIn = () => {
   const router = useRouter();
   const setUser = useAuth((state) => state.setUser);
   const [error, setError] = useState("");
 
-  const handleLogin = async (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     try {
-      const payload = Object.fromEntries(formData) as LoginRequest;
-      const res = await login(payload);
+      const formValues = Object.fromEntries(formData) as LoginRequest;
+      const res = await login(formValues);
       if (res) {
         setUser(res);
         router.push("/profile");
-      }
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Login failed");
       } else {
-        setError("Unexpected error occurred");
+        setError("Invalid email or password");
       }
+    } catch (error) {
+      console.log("error", error);
+      setError("Invalid email or password");
     }
   };
 
   return (
     <main className={css.mainContent}>
-      <form className={css.form} action={handleLogin}>
+      <form className={css.form} action={handleSubmit}>
         <h1 className={css.formTitle}>Sign in</h1>
 
         <div className={css.formGroup}>
@@ -69,4 +67,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignIn;

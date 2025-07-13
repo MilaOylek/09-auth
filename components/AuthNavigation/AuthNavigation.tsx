@@ -1,5 +1,5 @@
 "use client";
-import { logOut } from "@/lib/api/clientApi";
+import { logout } from "@/lib/api/clientApi";
 import { useAuth } from "@/lib/store/authStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ const AuthNavigation = () => {
   const router = useRouter();
 
   const handleLogOut = async () => {
-    await logOut();
+    await logout();
     clearAuth();
     router.replace("/sign-in");
   };

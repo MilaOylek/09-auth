@@ -2,34 +2,36 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { register, RegisterRequest } from "@/lib/api/clientApi";
+import { register } from "@/lib/api/clientApi";
+import { RegisterRequest } from "@/types/user";
 import { useAuth } from "@/lib/store/authStore";
 import css from "./SignUp.module.css";
-import { AxiosError } from "axios";
 
-const Register = () => {
+const SignUp = () => {
   const router = useRouter();
   const setUser = useAuth((state) => state.setUser);
   const [error, setError] = useState("");
 
-  const handleRegister = async (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     try {
-      const payload = Object.fromEntries(formData) as RegisterRequest;
-      const res = await register(payload);
+      const formValues = Object.fromEntries(formData) as RegisterRequest;
+      const res = await register(formValues);
       if (res) {
         setUser(res);
         router.push("/profile");
+      } else {
+        setError("Invalid email or password");
       }
-    } catch (err: unknown) {
-      const error = err as AxiosError<{ message: string }>;
-      setError(error.response?.data?.message || "Registration failed");
+    } catch (error) {
+      console.log("error", error);
+      setError("Invalid email or password");
     }
   };
 
   return (
     <main className={css.mainContent}>
       <h1 className={css.formTitle}>Sign up</h1>
-      <form className={css.form} action={handleRegister}>
+      <form className={css.form} action={handleSubmit}>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input
@@ -64,4 +66,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default SignUp;
