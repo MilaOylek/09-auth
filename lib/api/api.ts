@@ -1,27 +1,36 @@
+import { Note } from "@/types/note";
 import axios from "axios";
 
-// export const nextServer = axios.create({
-//   baseURL: process.env.NEXT_PUBLIC_API_URL + "/api",
-//   withCredentials: true,
-// });
-
-// export const nextServer = axios.create({
-//   baseURL: "https://notehub-api.goit.study",
-//   withCredentials: true,
-// });
-// export const nextServer = axios.create({
-//   baseURL: process.env.NEXT_PUBLIC_API_URL,
-//   withCredentials: true,
-// });
-
-// export const nextServer = axios.create({
-//   baseURL: "http://localhost:3000/api",
-//   withCredentials: true,
-// });
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
 export const nextServer = axios.create({
-  baseURL: baseURL + "/api",
+  baseURL,
   withCredentials: true,
 });
+
+export interface FetchNotesProps {
+  search?: string;
+  page?: number;
+  perPage?: number;
+  tag: string;
+}
+
+export type FetchNotesResponse = {
+  notes: Note[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+  currentPage: number;
+};
+
+export interface CreateUserData {
+  email: string;
+  password: string;
+}
+
+export interface SessionResponseData {
+  success: true;
+}
+
+export default nextServer;

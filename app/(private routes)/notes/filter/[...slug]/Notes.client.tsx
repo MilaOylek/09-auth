@@ -42,9 +42,7 @@ export default function Notes({ initialData, tag }: NotesClientProps) {
     setPage(pageNumber);
   }, []);
 
-  const totalPages = data
-    ? (data.totalPages ?? Math.ceil(data.total / PER_PAGE))
-    : 0;
+  const totalPages = data ? data.totalPages : 0;
 
   return (
     <div className={styles.app}>

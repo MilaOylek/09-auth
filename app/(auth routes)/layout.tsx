@@ -1,21 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   children: React.ReactNode;
 };
-const PublicLayout = ({ children }: Props) => {
-  const [isLoading, setIsLoading] = useState(true);
+
+export default function PublicLayout({ children }: Props) {
+  const [loading, setLoading] = useState(true);
+
   const router = useRouter();
 
   useEffect(() => {
     router.refresh();
-    setIsLoading(false);
+    setLoading(false);
   }, [router]);
 
-  return isLoading ? "loading..." : children;
-};
-
-export default PublicLayout;
+  return <>{loading ? <div>Loading...</div> : children}</>;
+}

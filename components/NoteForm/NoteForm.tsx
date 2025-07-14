@@ -3,9 +3,13 @@
 import { useNoteDraft } from "@/lib/store/noteDraftStore";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createNote, getCategories } from "@/lib/api/clientApi";
+import {
+  createNote,
+  getCategories,
+  CreateNoteRequest,
+} from "@/lib/api/clientApi";
 import { useState } from "react";
-import { type CategoryType, CreateNoteRequest } from "@/types/note";
+import { type CategoryType } from "@/types/note";
 import styles from "./NoteForm.module.css";
 
 export default function NoteForm() {

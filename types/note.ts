@@ -64,10 +64,3 @@ export type CategoryType = {
   createdAt: string;
   updatedAt: string;
 };
-
-export type CreateNoteRequest = {
-  title: string;
-  content: string;
-  categoryId?: string;
-  tag?: string;
-};

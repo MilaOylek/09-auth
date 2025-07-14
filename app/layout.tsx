@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     title: "NoteHubApp",
     description: "Manage your personal notes efficiently",
 
-    url: "08-zustand-plum.vercel.app",
+    url: "09-auth-theta.vercel.app",
     siteName: "NoteHub",
     images: [
       {

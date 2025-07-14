@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LoginRequest } from "@/types/user";
-import { login } from "@/lib/api/clientApi";
+import { type LoginRequest, login } from "@/lib/api/clientApi";
 import { useAuth } from "@/lib/store/authStore";
 import css from "./SignIn.module.css";
 

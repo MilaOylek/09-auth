@@ -1,18 +1,30 @@
 import axios from "axios";
-import {
-  type Note,
-  type FetchNotesParams,
-  type FetchNotesResponse,
-  type Category,
-  CreateNoteRequest,
-} from "@/types/note";
-import {
-  User,
-  UpdateProfileRequest,
-  RegisterRequest,
-  LoginRequest,
-} from "@/types/user";
-import { nextServer } from "./api";
+import { type Note, Category, type FetchNotesParams } from "@/types/note";
+import { User } from "@/types/user";
+import { nextServer as api, FetchNotesResponse } from "@/lib/api/api";
+
+export type UpdateProfileRequest = {
+  username?: string;
+  email?: string;
+  avatar?: string;
+};
+
+export type RegisterRequest = {
+  email: string;
+  password: string;
+};
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type CreateNoteRequest = {
+  title: string;
+  content: string;
+  categoryId?: string;
+  tag?: string;
+};
 
 export type ServerBoolResponse = {
   success: boolean;
@@ -29,7 +41,7 @@ export const fetchNotes = async ({
     if (search) params.search = search;
     if (tag && tag.toLowerCase() !== "all") params.tag = tag;
 
-    const res = await nextServer.get<FetchNotesResponse>("/notes", { params });
+    const res = await api.get<FetchNotesResponse>("/notes", { params });
     return res.data;
   } catch (error) {
     handleApiError(error, "Error fetching notes");
@@ -39,7 +51,7 @@ export const fetchNotes = async ({
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
   try {
-    const res = await nextServer.get<Note>(`/notes/${id}`);
+    const res = await api.get<Note>(`/notes/${id}`);
     return res.data;
   } catch (error) {
     handleApiError(error, "Error fetching note by id");
@@ -49,7 +61,7 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 
 export const createNote = async (payload: CreateNoteRequest): Promise<Note> => {
   try {
-    const res = await nextServer.post<Note>("/notes", payload);
+    const res = await api.post<Note>("/notes", payload);
     return res.data;
   } catch (error) {
     handleApiError(error, "Error creating note");
@@ -59,7 +71,7 @@ export const createNote = async (payload: CreateNoteRequest): Promise<Note> => {
 
 export const deleteNote = async (id: string): Promise<Note> => {
   try {
-    const res = await nextServer.delete<Note>(`/notes/${id}`);
+    const res = await api.delete<Note>(`/notes/${id}`);
     return res.data;
   } catch (error) {
     handleApiError(error, "Error deleting note");
@@ -68,26 +80,26 @@ export const deleteNote = async (id: string): Promise<Note> => {
 };
 
 export const register = async (data: RegisterRequest) => {
-  const res = await nextServer.post<User>("/auth/register", data);
+  const res = await api.post<User>("/auth/register", data);
   return res.data;
 };
 
 export const login = async (data: LoginRequest) => {
-  const res = await nextServer.post<User>("/auth/login", data);
+  const res = await api.post<User>("/auth/login", data);
   return res.data;
 };
 
 export const logout = async (): Promise<void> => {
-  await nextServer.post("/auth/logout");
+  await api.post("/auth/logout");
 };
 
 export const checkSession = async () => {
-  const res = await nextServer.get<ServerBoolResponse>("/auth/session");
+  const res = await api.get<ServerBoolResponse>("/auth/session");
   return res.data.success;
 };
 
 export const getMe = async () => {
-  const res = await nextServer.get<User>("/users/me");
+  const res = await api.get<User>("/users/me");
   return res.data;
 };
 
@@ -113,7 +125,7 @@ const handleApiError = (error: unknown, defaultMessage: string): never => {
 
 export const getCategories = async (): Promise<Category[]> => {
   try {
-    const { data } = await nextServer.get<Category[]>("/categories");
+    const { data } = await api.get<Category[]>("/categories");
     return data;
   } catch (error) {
     handleApiError(error, "Error fetching categories");
@@ -122,6 +134,6 @@ export const getCategories = async (): Promise<Category[]> => {
 };
 
 export const updateProfile = async (data: UpdateProfileRequest) => {
-  const res = await nextServer.put<User>("/users/me", data);
+  const res = await api.put<User>("/users/me", data);
   return res.data;
 };
