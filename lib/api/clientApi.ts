@@ -3,12 +3,6 @@ import { type Note, Category, type FetchNotesParams } from "@/types/note";
 import { User } from "@/types/user";
 import { nextServer as api, FetchNotesResponse } from "@/lib/api/api";
 
-export type UpdateProfileRequest = {
-  username?: string;
-  email?: string;
-  avatar?: string;
-};
-
 export type RegisterRequest = {
   email: string;
   password: string;
@@ -26,6 +20,11 @@ export type CreateNoteRequest = {
   tag?: string;
 };
 
+export type UpdateProfileRequest = {
+  username?: string;
+  email?: string;
+  avatar?: string;
+};
 export type ServerBoolResponse = {
   success: boolean;
 };
