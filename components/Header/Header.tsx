@@ -1,7 +1,7 @@
 import Link from "next/link";
 import css from "./Header.module.css";
 import TagsMenu from "@/components/TagsMenu/TagsMenu";
-import CategoriesMenu from "../CategoriesMenu/CategoriesMenu";
+// import CategoriesMenu from "../CategoriesMenu/CategoriesMenu";
 import AuthNavigation from "../AuthNavigation/AuthNavigation";
 
 const Header = () => {
@@ -12,9 +12,9 @@ const Header = () => {
       </Link>
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>
-          <li>
+          {/* <li>
             <CategoriesMenu />
-          </li>
+          </li> */}
           <li className={css.navigationItem}>
             <Link className={css.navigationLink} href="/">
               Home
