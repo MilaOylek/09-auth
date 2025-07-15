@@ -2,30 +2,26 @@
 
 import { useNoteDraft } from "@/lib/store/noteDraftStore";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  createNote,
-  getCategories,
-  CreateNoteRequest,
-} from "@/lib/api/clientApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote, CreateNoteRequest } from "@/lib/api/clientApi";
 import { useState } from "react";
-import { type CategoryType } from "@/types/note";
+// import { type CategoryType } from "@/types/note";
 import styles from "./NoteForm.module.css";
 
 export default function NoteForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { draft, setDraft, clearDraft } = useNoteDraft();
+
   const [formState, setFormState] = useState<CreateNoteRequest>({
     title: draft.title || "",
     content: draft.content || "",
-    categoryId: draft.categoryId || "",
   });
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
-  });
+  // const { data: categories = [] } = useQuery({
+  //   queryKey: ["categories"],
+  //   queryFn: getCategories,
+  // });
 
   const mutation = useMutation({
     mutationFn: createNote,
@@ -85,7 +81,7 @@ export default function NoteForm() {
         />
       </div>
 
-      <div className={styles.formGroup}>
+      {/* <div className={styles.formGroup}>
         <label htmlFor="categoryId">Category</label>
         <select
           name="categoryId"
@@ -103,7 +99,7 @@ export default function NoteForm() {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       {mutation.isError && (
         <p className={styles.error}>Failed to create note. Try again.</p>

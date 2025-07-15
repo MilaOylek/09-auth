@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type Note, Category, type FetchNotesParams } from "@/types/note";
+import { type Note, type FetchNotesParams } from "@/types/note";
 import { User } from "@/types/user";
 import { nextServer as api, FetchNotesResponse } from "@/lib/api/api";
 
@@ -16,13 +16,13 @@ export type LoginRequest = {
 export type CreateNoteRequest = {
   title: string;
   content: string;
-  categoryId?: string;
+  // categoryId?: string;
   tag?: string;
 };
 
 export type UpdateProfileRequest = {
   username?: string;
-  email?: string;
+  // email?: string;
   avatar?: string;
 };
 export type ServerBoolResponse = {
@@ -122,17 +122,7 @@ const handleApiError = (error: unknown, defaultMessage: string): never => {
   throw error;
 };
 
-export const getCategories = async (): Promise<Category[]> => {
-  try {
-    const { data } = await api.get<Category[]>("/categories");
-    return data;
-  } catch (error) {
-    handleApiError(error, "Error fetching categories");
-    throw error;
-  }
-};
-
 export const updateProfile = async (data: UpdateProfileRequest) => {
-  const res = await api.put<User>("/users/me", data);
+  const res = await api.patch<User>("/users/me", data);
   return res.data;
 };

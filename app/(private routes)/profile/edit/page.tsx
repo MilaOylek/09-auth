@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getMe, updateProfile } from "@/lib/api/clientApi";
 import css from "./EditProfilePage.module.css";
+// import { useAuth } from "@/context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 type User = {
   username: string;
@@ -13,11 +16,10 @@ type User = {
 
 export default function ProfileEditClient() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [avatar, setAvatar] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,8 +29,6 @@ export default function ProfileEditClient() {
         const data = await getMe();
         setUser(data);
         setUsername(data.username);
-        setEmail(data.email);
-        setAvatar(data.avatar || "");
       } catch {
         setError("Failed to load user data");
       }
@@ -42,7 +42,10 @@ export default function ProfileEditClient() {
     setError(null);
 
     try {
-      await updateProfile({ username, email, avatar });
+      await updateProfile({ username });
+
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+
       router.push("/profile");
     } catch {
       setError("Failed to update profile");
@@ -51,13 +54,30 @@ export default function ProfileEditClient() {
     }
   };
 
-  if (!user) return <p>Loading...</p>;
+  const handleCancel = () => {
+    router.back();
+  };
+
+  if (!user) return <p>Loading user data...</p>;
 
   return (
     <main className={css.mainContent}>
       <h1>Edit Profile</h1>
       <form onSubmit={handleSubmit} className={css.form}>
         {error && <p className={css.error}>{error}</p>}
+
+        {user.avatar && (
+          <div className={css.avatarContainer}>
+            <Image
+              src={user.avatar}
+              alt="User Avatar"
+              width={100}
+              height={100}
+              className={css.avatarImage}
+            />
+          </div>
+        )}
+
         <label>
           Username:
           <input
@@ -65,28 +85,31 @@ export default function ProfileEditClient() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            className={css.input}
           />
         </label>
         <label>
           Email:
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            value={user.email}
+            readOnly
+            className={css.input}
           />
         </label>
-        <label>
-          Avatar URL:
-          <input
-            type="url"
-            value={avatar}
-            onChange={(e) => setAvatar(e.target.value)}
-          />
-        </label>
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save Changes"}
-        </button>
+
+        <div className={css.actions}>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className={css.cancelButton}
+          >
+            Cancel
+          </button>
+          <button type="submit" disabled={loading} className={css.submitButton}>
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
       </form>
     </main>
   );

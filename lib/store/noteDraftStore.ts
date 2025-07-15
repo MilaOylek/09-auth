@@ -27,7 +27,7 @@ export const useNoteDraft = create<NoteDraftStore>()(
             draft: {
               title: "",
               content: "",
-              categoryId: "",
+              // categoryId: "",
             },
           });
         },

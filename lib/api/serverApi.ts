@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
-import { nextServer as api, FetchNotesResponse } from "./api";
+import { nextServer as api } from "./api";
 import { ServerBoolResponse } from "./clientApi";
+import { FetchNotesResponse, FetchNotesParams, Note } from "@/types/note";
 import { User } from "@/types/user";
-import { FetchNotesParams, Note } from "@/types/note";
 
 export const fetchNotes = async ({
   search = "",
@@ -37,7 +37,7 @@ export const fetchNoteById = async (noteId: string) => {
 
 export const checkServerSession = async () => {
   const cookieData = await cookies();
-  const response = await api<ServerBoolResponse>(`/auth/session`, {
+  const response = await api.get<ServerBoolResponse>(`/auth/session`, {
     headers: { Cookie: cookieData.toString() },
   });
   return response;
@@ -45,15 +45,7 @@ export const checkServerSession = async () => {
 
 export const getServerMe = async () => {
   const cookieData = await cookies();
-  const { data } = await api<User>(`/users/me`, {
-    headers: { Cookie: cookieData.toString() },
-  });
-  return data;
-};
-
-export const getServerNoteById = async (id: string): Promise<Note> => {
-  const cookieData = await cookies();
-  const { data } = await api<Note>(`/notes/${id}`, {
+  const { data } = await api.get<User>(`/users/me`, {
     headers: { Cookie: cookieData.toString() },
   });
   return data;
