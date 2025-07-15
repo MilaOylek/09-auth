@@ -3,13 +3,6 @@ import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
-// const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-// const cleanApiUrl = rawApiUrl.endsWith("/")
-//   ? rawApiUrl.slice(0, -1)
-//   : rawApiUrl;
-
-// const baseURL = `${cleanApiUrl}/api`;
-
 export const nextServer = axios.create({
   baseURL,
   withCredentials: true,
