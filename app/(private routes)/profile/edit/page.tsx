@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getMe, updateProfile } from "@/lib/api/clientApi";
 import css from "./EditProfilePage.module.css";
-// import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/lib/store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
 
 type User = {
@@ -14,9 +14,10 @@ type User = {
   avatar?: string;
 };
 
-export default function ProfileEditClient() {
+export default function ProfileEditPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { setUser: setAuthUser } = useAuth();
 
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState("");
@@ -24,17 +25,19 @@ export default function ProfileEditClient() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchUser() {
+    async function fetchUserData() {
       try {
         const data = await getMe();
         setUser(data);
         setUsername(data.username);
-      } catch {
-        setError("Failed to load user data");
+      } catch (err: unknown) {
+        console.error("Failed to load user data:", err);
+        setError("Failed to load user data. Please try again.");
+        router.push("/profile");
       }
     }
-    fetchUser();
-  }, []);
+    fetchUserData();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,23 +45,31 @@ export default function ProfileEditClient() {
     setError(null);
 
     try {
-      await updateProfile({ username });
+      const updatedUserData = await updateProfile({ username });
+
+      setAuthUser(updatedUserData);
 
       queryClient.invalidateQueries({ queryKey: ["me"] });
 
       router.push("/profile");
-    } catch {
-      setError("Failed to update profile");
+    } catch (err: unknown) {
+      console.error("Failed to update profile:", String(err));
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to update profile. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
-
   const handleCancel = () => {
     router.back();
   };
 
-  if (!user) return <p>Loading user data...</p>;
+  if (loading || !user) {
+    return <p>Loading user data...</p>;
+  }
 
   return (
     <main className={css.mainContent}>
