@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "User Profile",
     description: "View and edit your profile information",
-    url: "https://08-zustand-plum.vercel.app/private-routes/profile",
+    url: "https://09-auth-rose.vercel.app/private-routes/profile",
     siteName: "NoteHub",
     images: [
       {
